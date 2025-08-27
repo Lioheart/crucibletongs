@@ -1,0 +1,67 @@
+{
+  "title": "Crucible Tongs",
+  "description": "Crucible Tongs adds some minor functionality to the crucible system to enhance the experience for the current Ember Playtest. Among these is a Action HUD on the Token to quickly select combat actions as well as some additional tooltips for the Macro bar. Be aware as Crucible is still under heavy development the functions might get oudated or replace quickly.",
+  "version": "1.0.0",
+  "manifest": "https://raw.githubusercontent.com/Cibola8/crucibletongs/main/module.json",
+  "download": "https://github.com/Cibola8/cibola8/releases/download/1.0.0/crucibletongs-1.0.0.zip",
+  "languages": [
+    {
+      "lang": "de",
+      "name": "Deutsch",
+      "path": "lang/de.json"
+    },
+    {
+      "lang": "en",
+      "name": "English",
+      "path": "lang/en.json"
+    }
+  ],
+  "esmodules": [
+    "modules/init.js"
+  ],
+  "styles": [
+    "styles/css.css"
+  ],
+  "packs": [],
+  "socket": true,
+  "id": "crucibletongs",
+  "authors": [ { "name": "Huepfklotz" } ],
+  "compatibility": {
+    "minimum": "13",
+    "verified": "13",
+    "maximum": "13"
+  },
+  "media": [
+    {
+      "type": "setup",
+      "url": "modules/crucibletongs/templates/assets/setup.webp",
+      "thumbnail": "modules/crucibletongs/templates/assets/setup-thumb.webp"
+    }
+  ],
+  "relationships": {
+    "systems": [
+      {
+        "id": "crucible",
+        "type": "system",
+        "compatibility": {
+          "minimum": "0.7.0"
+        }
+      }
+    ]
+  },
+  "flags": {
+    "hotReload": {
+      "extensions": [
+        "css",
+        "html",
+        "hbs",
+        "json"
+      ],
+      "paths": [
+        "templates",
+        "styles/css",
+        "lang"
+      ]
+    }
+  }
+}

@@ -1,0 +1,13 @@
+<div class="crucibletongs-action-hud" style="transform: scale({{scsale}});--radius: {{radius}}px;">
+    <div class="crucibletongs-action-hud-content">
+        {{#each actions as |action|}}
+            <button style="background-image: url('{{action.img}}');{{{action.style}}}" class="collapsed crucibletongs-action-button" data-action="action" data-uuid="{{../actorUuid}}" data-crucible-tooltip="action" data-tooltip-class="crucible crucible-tooltip" data-action-id="{{action.id}}" data-tooltip="{{action.name}}">
+                {{#unless action.img}}
+                    <i class="fas fa-question"></i>
+                {{/unless}}
+            </button>
+        {{/each}}
+        <button class="crucibletongs-action-button crucibletongs-action-close" data-action="quickClose" data-tooltip="{{localize 'crucibletongs.selectAction'}}">
+            <i class="fas fa-times"></i>
+    </div>
+</div>
