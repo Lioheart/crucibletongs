@@ -9,4 +9,9 @@ Be aware as Crucible is still under heavy development the functions might get ou
 # Features
 
 * Action HUD on the Token HUD to speed up combat with quick select buttons for attacks
+
+<img width="477" height="523" alt="grafik" src="https://github.com/user-attachments/assets/348c6aea-51d4-4043-a213-0e65fe10180f" />
+
 * Tooltips on Action Macros on the hotbar which show details on the action if a token or character is currently selected.
+
+<img width="537" height="419" alt="grafik" src="https://github.com/user-attachments/assets/49d5ae75-26a4-49f3-b1e5-3ff3767c507c" />
