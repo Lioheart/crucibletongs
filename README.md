@@ -8,10 +8,15 @@ Be aware as Crucible is still under heavy development the functions might get ou
 
 # Features
 
-* Action HUD on the Token HUD to speed up combat with quick select buttons for attacks
+* Action HUD on the Token HUD to speed up combat with quick select buttons for attacks. Will show talents instead outside of combat
 
-<img width="477" height="523" alt="grafik" src="https://github.com/user-attachments/assets/348c6aea-51d4-4043-a213-0e65fe10180f" />
+<img width="477" height="523" alt="grafik" src="https://github.com/Plushtoast/crucibletongs/blob/foundry13/demo/hud.png?raw=true" />
 
 * Tooltips on Action Macros on the hotbar which show details on the action if a token or character is currently selected.
 
-<img width="537" height="419" alt="grafik" src="https://github.com/user-attachments/assets/49d5ae75-26a4-49f3-b1e5-3ff3767c507c" />
+<img width="537" height="419" alt="grafik" src="https://github.com/Plushtoast/crucibletongs/blob/foundry13/demo/tooltip.png?raw=true" />
+
+
+* Hotbar replacement which shows actor details and provides quick access to actions and talents.
+
+<img width="537" height="419" alt="grafik" src="https://github.com/Plushtoast/crucibletongs/blob/foundry13/demo/hotbar.png?raw=true" />

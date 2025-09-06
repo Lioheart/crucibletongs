@@ -45,14 +45,86 @@
 }
 
 .crucibletongs-actor-hud {
-    position: absolute;
-    transform: translateX(-100%);
     --color-frame: #3f3128;
     --ressource-color: #FF9900;
     --text-color: #cfbea2;
 
+    pointer-events: all;
+    margin-bottom: 10px;
+    transition: all 0.3s ease-in-out;
+
     .crucibletongs-hotbar-inner {
         position: relative;
+    }
+
+    .actions-bar {
+        display: flex;
+        flex-direction: column;
+        flex-wrap: wrap;
+        justify-content: start;
+        align-items: start;
+        max-height: 88px;
+        min-height: 88px;
+        height: 88px;
+        transition: all 0.3s ease-in-out;
+    }
+
+    .tabs {
+        justify-content: start;
+        gap: 1px;
+    }
+
+    .tabs a {
+        width: 30px;
+        height: 30px;
+        background: black;
+        border: 2px solid var(--color-frame);
+        cursor: var(--cursor-pointer);
+
+        &.active {
+            border-color: darkred;
+            box-shadow: 0 0 10px darkred;
+        }
+
+        &:hover {
+            border-color: var(--color-warm-1);
+            box-shadow: 0 0 10px var(--color-warm-1);
+        }
+    }
+
+    .slot {
+        flex: 0 0 40px;
+        width: 40px;
+        height: 40px;
+        background-color: rgba(28, 26, 26, 0.8);
+        border: 2px solid var(--color-frame);
+        cursor: var(--cursor-pointer);
+        position: relative;
+
+        .key {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 20px;
+            line-height: 20px;
+            padding-right: 2px;
+            background: var(--key-bg-color-empty, var(--color-cool-5));
+            border-radius: 10px 0 8px 0;
+            color: var(--key-text-color, var(--color-light-1));
+            text-align: center;
+            pointer-events: none;
+        }
+
+        img {
+            object-fit: contain;
+            width: 40px;
+            height: 40px;
+        }
+
+        &:hover {
+            border-color: darkred;
+            box-shadow: 0 0 10px darkred;
+        }
     }
 
     .pips {
@@ -93,6 +165,7 @@
 
     .avatar-container {
         position: relative;
+        min-width: 180px;
         align-items: center;
         justify-content: center;
     }
@@ -129,8 +202,8 @@
         justify-content: center;
         top: 10px;
         gap: 40px;
-        
-        z-index: -1;
+
+        z-index: 1;
 
         div {
             border: 2px solid var(--color-frame);

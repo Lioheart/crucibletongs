@@ -4,6 +4,11 @@
         "SETTINGS": {
             "enableHotBarActor": "Aktiviere den Hotbar-Actor",
             "enableHotBarActorHint": "Der aktuell ausgewählte Akteur oder Charakter wird an der Hotbar angezeigt."
+        },
+        "TABS": {
+            "MACRO": "Makros",
+            "ACTIONS": "Aktionen",
+            "TALENTS": "Talente"
         }
     }
 }

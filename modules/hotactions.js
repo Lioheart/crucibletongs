@@ -66,7 +66,7 @@ export class HotActions extends foundry.applications.api.HandlebarsApplicationMi
         const { type, actionId } = target.dataset;
         switch (type) {
             case 'action':
-                game.system.api.documents.CrucibleActor.macroAction(this.actor, actionId);
+                this.actor.useAction(actionId);
                 break;
             case 'skill':
                 this.actor.rollSkill(actionId, {dialog: true});
@@ -113,18 +113,17 @@ export class HotActions extends foundry.applications.api.HandlebarsApplicationMi
     }
 
     prepareActions(context) {
-        const actions = Object.values(this.actor.actions || {});
+        const actions = Object.entries(this.actor.actions || {});
         const skipActions = new Set(['move', 'recover'])
         const totalActions = actions.length - skipActions.size;
         let realindex = 0;
-        return actions.reduce((acc, action) => {
-            if (skipActions.has(action.id)) {
-                return acc;
-            }
+        return actions.reduce((acc, [key, action]) => {
+            if (skipActions.has(action.id)) return acc;
+            
             const { x, y } = this.calculateXY(realindex, totalActions, context, HotActions.maxActionsPerCircle.action);
             acc.push({
                 img: action.img,
-                id: action.id,
+                id: key,
                 name: action.name,
                 type: 'action',
                 style: `left: ${x - 25}px; top: ${y - 25}px;`

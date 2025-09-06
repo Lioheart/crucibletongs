@@ -1,47 +1,8 @@
 <div class="crucibletongs-hotbar-inner" >
     {{#if actor}}
-    <div>
-        <div class="flexrow resources">
-            <div class="flex0" data-tooltip="{{resources.health.label}}" style="background:{{resources.health.color.high}};">
-                 {{resources.health.value}}/{{resources.health.max}}
-            </div>
-            <div class="flex0" data-tooltip="{{resources.morale.label}}" style="background:{{resources.morale.color.high}};">
-                {{resources.morale.value}}/{{resources.morale.max}}
-            </div>
-        </div>
-        <div class="avatar-container flexrow">
-            <img class="avatar flex0" src="{{actor.img}}"/>
-            {{#each weapons}}
-            <div data-action="weapon" data-id="{{weapon.id}}" class="weapon" style="{{{style}}}">
-                {{#if weapon.img}}
-                    <img data-tooltip="{{weapon.name}}" src="{{weapon.img}}"/>                    
-                {{else}}
-                    <i class="fas fa-hand"></i>
-                {{/if}}
-            </div>
-            {{/each}}
-        </div>
-        <div class="flexrow quickbuttons" data-tooltip-direction="RIGHT">
-            <div class="flex0 tongs-indicator" data-tooltip-class="crucible crucible-tooltip" data-tooltip-html="{{defenseTooltip}}"><i class="fas fa-shield"></i></div>
-        </div>
-        {{log resources}}
-        {{#if inCombat}}
-            <div class="pips flexrow" data-tooltip="{{resources.action.label}} {{resources.action.value}}/{{resources.action.max}}">
-                {{#each resources.action.pips as |pip|}}
-                    <div class="pip {{pip.cssClass}}"></div>
-                {{/each}}
-            </div>
-            <div class="pips flexrow focus" data-tooltip="{{resources.focus.label}} {{resources.focus.value}}/{{resources.focus.max}}">
-                {{#each resources.focus.pips as |pip|}}
-                    <div class="pip {{pip.cssClass}}"></div>
-                {{/each}}
-            </div>
-            <div class="pips flexrow heroism" data-tooltip="{{resources.heroism.label}} {{resources.heroism.value}}/{{resources.heroism.max}}">
-                {{#each resources.heroism.pips as |pip|}}
-                    <div class="pip {{pip.cssClass}}"></div>
-                {{/each}}
-            </div>
-        {{/if}}
-    </div>
+    <div class="flexrow">
+        {{> modules/crucibletongs/templates/hud/actor-hud.hbs}}
+        {{> modules/crucibletongs/templates/hud/actor-actions-hud.hbs}}
+    </div>    
     {{/if}}
 </div>

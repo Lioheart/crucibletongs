@@ -5,7 +5,7 @@ export class HotBarActor extends foundry.applications.api.HandlebarsApplicationM
     static DEFAULT_OPTIONS = {
         id: "actor-hud",
         actions: {
-
+            action: this._onAction,
         },
         window: {
             frame: false,
@@ -15,20 +15,32 @@ export class HotBarActor extends foundry.applications.api.HandlebarsApplicationM
 
     static PARTS = {
         hud: {
-            template: "modules/crucibletongs/templates/hud/hotbar-hud.hbs"
+            template: 'modules/crucibletongs/templates/hud/hotbar-hud.hbs',
+            templates: ['modules/crucibletongs/templates/hud/actor-hud.hbs', 'modules/crucibletongs/templates/hud/actor-actions-hud.hbs']
         }
     };
 
-    setPosition(position) {
-        //const ratio = canvas.dimensions.size / 100;
-        const hotbar = ui.hotbar.element.getBoundingClientRect();
-        const revised = {
+    static TABS = {
+        sheet: {
+            tabs: [
+                { id: 'actions', label: 'crucibletongs.TABS.ACTIONS' },
+                { id: 'talents', label: 'crucibletongs.TABS.TALENTS' },
+                { id: 'macro', label: 'crucibletongs.TABS.MACRO' },
+            ],
+            initial: 'actions',
+        },
+    };
 
-            top: hotbar.top,
-            left: hotbar.left,
+    static _onAction(event, target) {
+        const { type, actionId } = target.dataset;
+        switch (type) {
+            case 'action':
+                this.actor.useAction(actionId);
+                break;
+            case 'skill':
+                this.actor.rollSkill(actionId, { dialog: true });
+                break;
         }
-
-        return super.setPosition(revised);
     }
 
     #setActor() {
@@ -54,66 +66,97 @@ export class HotBarActor extends foundry.applications.api.HandlebarsApplicationM
         context.resources = this.#prepareResources();
         context.defenseTooltip = this.#prepareDefenseTooltip();
         context.weapons = this.#weaponPositions();
+        context.talents = this.#prepareSkills();
+        context.slots = ui.hotbar.slots;
     }
 
     #prepareDefenseTooltip() {
-        return ['physical', 'fortitude', 'willpower', 'reflex'].map(type => {
+        const lines = ['physical', 'fortitude', 'willpower', 'reflex'].map(type => {
             const value = this.actor.defenses[type];
             const name = game.i18n.localize(`DEFENSES.${type.capitalize()}`);
             return `${name}: ${value.total}`;
-        }).join("<br>");
+        });
+        const stride = game.i18n.localize('ACTOR.FIELDS.movement.stride.label');
+        const engage = game.i18n.localize('ACTOR.FIELDS.movement.engagement.labelShort');
+        lines.push(`${stride}: ${this.actor.system.movement.stride}`);
+        lines.push(`${engage}: ${this.actor.system.movement.engagement}`);
+
+        return lines.join("<br>");
     }
 
     #weaponPositions() {
         const weaponPositions = [
-            "left:-2px;top:75px;",
-            "right:-2px;top:75px;",
-            "left:-19px;top:40px;",
-            "right:-19px;top:40px;",
-            "left:-15px;top:5px;",
-            "right:-15px;top:5px;",
+            "left:calc(50% - 72px);top:75px;",
+            "left:calc(50% + 32px);top:75px;",
+            "left:calc(50% - 88px);top:40px;",
+            "left:calc(50% + 48px);top:40px;",
+            "left:calc(50% - 83px);top:5px;",
+            "left:calc(50% + 43px);top:5px;",
         ];
 
-        const positions = []
+        const positions = [];
         const actorWeapons = this.actor.equipment.weapons;
-        const isAnimal = actorWeapons.natural.length
-        let position = 0;
+        const isAnimal = actorWeapons.natural.length > 0;
+        let positionIndex = 0;
+
         if (!isAnimal) {
-            positions.push({
-                weapon: actorWeapons.mainhand,
-                style: weaponPositions[position++]
-            });
-
-            if (actorWeapons.mainhand.system.config.category.hands > 1) {
-                positions.push({
-                    weapon: actorWeapons.mainhand,
-                    style: weaponPositions[position++]
-                });
-            } else {
-                positions.push({
-                    weapon: actorWeapons.offhand,
-                    style: weaponPositions[position++]
-                });
-            }
+            this.#addHumanoidWeapons(positions, actorWeapons, weaponPositions, positionIndex);
+        } else {
+            this.#addAnimalWeapons(positions, actorWeapons.natural, weaponPositions);
         }
 
-        if (!isAnimal) return positions;
-
-        for (const weapon of actorWeapons.natural) {
-            positions.push({
-                weapon,
-                style: weaponPositions[position++]
-            });
-            if (position >= weaponPositions.length) break;
-        }
-        for (const weapon of actorWeapons.natural) {
-            positions.push({
-                weapon,
-                style: weaponPositions[position++]
-            });
-            if (position >= weaponPositions.length) break;
-        }
         return positions;
+    }
+
+    #addHumanoidWeapons(positions, weapons, weaponPositions, startIndex) {
+        let positionIndex = startIndex;
+
+        positions.push({
+            weapon: weapons.mainhand,
+            style: weaponPositions[positionIndex++]
+        });
+
+        const isTwoHanded = weapons.mainhand.system.config.category.hands > 1;
+        const secondWeapon = isTwoHanded ? weapons.mainhand : weapons.offhand;
+
+        positions.push({
+            weapon: secondWeapon,
+            style: weaponPositions[positionIndex]
+        });
+    }
+
+    #addAnimalWeapons(positions, naturalWeapons, weaponPositions) {
+        let positionIndex = 0;
+
+        for (const weapon of naturalWeapons) {
+            if (positionIndex >= weaponPositions.length) break;
+
+            positions.push({
+                weapon,
+                style: weaponPositions[positionIndex++]
+            });
+        }
+    }
+
+    #prepareSkills() {
+        const skills = Object.entries(this.actor.skills || {});
+
+        return skills.map(([id, skill], index) => {
+            const baseSkill = SYSTEM.SKILL.SKILLS[id];
+            return {
+                img: baseSkill.icon,
+                id,
+                name: baseSkill.label
+            };
+        });
+    }
+
+    _insertElement(element) {
+        const existing = document.getElementById(element.id);
+        if (existing)
+            existing.replaceWith(element);
+        else
+            ui.hotbar.element.insertAdjacentElement("beforebegin", element);
     }
 
     #prepareResources() {
@@ -162,6 +205,7 @@ export class HotBarActor extends foundry.applications.api.HandlebarsApplicationM
     async _onRender(context, options) {
         await super._onRender(context, options);
 
+        ui.hotbar.element.hidden = !!this.actor;
     }
 
     static updateHotbar(actorId, force = false) {
@@ -176,5 +220,59 @@ export class HotBarActor extends foundry.applications.api.HandlebarsApplicationM
                 instance.render(true, { focus: false });
             }
         }
+    }
+
+    async _onFirstRender(context, options) {
+        await super._onFirstRender(context, options);
+
+        new foundry.applications.ux.ContextMenu(this.element, '[data-action="weapon"]', [], {
+            onOpen: this.#onWeaponContext.bind(this),
+            jQuery: false,
+            fixed: true,
+            eventName: 'click'
+        });
+    }
+
+    #onWeaponContext(target) {
+        const { id } = target.dataset;
+        const weapon = this.actor.items.get(id);
+
+        ui.context.menuItems = this.#getWeaponContextOptions(weapon);
+    }
+
+    #getWeaponContextOptions(weapon) {
+        const naturalWeapons = weapon?.system?.properties?.has("natural");
+        if (naturalWeapons) return [];
+
+        if (!weapon) {
+            const options = [];
+            for (const item of this.actor.items) {
+                if (item.type !== 'weapon') continue;
+                if (item.system.equipped) continue;
+                if (item.system.properties.has("natural")) continue;
+
+                options.push({
+                    name:  `${item.system.dropped ? 'Recover' : 'Equip'} ${item.name}`,
+                    icon: `<i class='fa-solid ${item.system.dropped ? 'fa-hand-back-fist' : 'fa-shield-plus'}'></i>`,
+                    callback: () => this.actor.equipItem(item.id, {equipped: true}),
+                });
+            }
+            return options;
+        }
+
+        return [
+            {
+                name: `Drop ${weapon.name}`,
+                icon: "<i class='fa-solid fa-hand-point-down'></i>",
+                condition: !weapon.system.dropped,
+                callback: () => this.actor.equipItem(weapon.id, {equipped: false, dropped: true}),
+            },
+            {
+                name: `Un-equip ${weapon.name}`,
+                icon: "<i class='fa-solid fa-shield-minus'></i>",
+                condition: !weapon.system.dropped,
+                callback: () => this.actor.equipItem(weapon.id, {equipped: false, dropped: false}),
+            },
+        ];
     }
 }

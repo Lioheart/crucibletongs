@@ -1,0 +1,48 @@
+<div>
+    <nav class="sheet-tabs tabs" aria-role="Form Tab Navigation">
+
+        <a class="{{tabs.actions.cssClass}}" data-action="tab" data-group="sheet" data-tab="actions" data-tooltip="crucibletongs.TABS.ACTIONS">
+            <img class="tab-icon" src="systems/crucible/ui/tabs/actions.webp">
+        </a>
+        <a class="{{tabs.talents.cssClass}}" data-action="tab" data-group="sheet" data-tab="talents" data-tooltip="crucibletongs.TABS.TALENTS">
+            <img class="tab-icon" src="systems/crucible/ui/tabs/talents.webp">
+        </a>
+        <a class="{{tabs.macro.cssClass}}" data-action="tab" data-group="sheet" data-tab="macro"
+            data-tooltip="crucibletongs.TABS.MACRO">
+            <img class="tab-icon" src="systems/crucible/ui/tabs/biography.webp">
+        </a>
+    </nav>
+
+    <section class="tab flexcol {{tabs.actions.cssClass}}" data-group="{{tabs.actions.group}}" data-tab="{{tabs.actions.id}}">
+        <div class="actions-bar" data-tooltip-direction="UP">
+            {{#each actor.actions as |action key|}}
+            <div class="slot" type="button" data-type="action" data-action="action" data-key="{{key}}" data-uuid="{{../actor.uuid}}" data-crucible-tooltip="action" data-tooltip-class="crucible crucible-tooltip" data-tooltip="{{action.name}}" data-action-id="{{key}}">
+                <img src="{{action.img}}" />
+            </div>
+            {{/each}}
+        </div>
+    </section>
+    <section class="tab flexcol {{tabs.talents.cssClass}}" data-group="{{tabs.talents.group}}"
+        data-tab="{{tabs.talents.id}}">
+        <div class="actions-bar" data-tooltip-direction="UP">
+            {{#each talents as |action key|}}
+            <div class="slot" type="button" data-type="skill" data-action-id="{{action.id}}" data-action="action" data-key="{{key}}" data-tooltip="{{action.name}}" data-tooltip-class="crucible crucible-tooltip">
+                <img src="{{action.img}}" />
+            </div>
+            {{/each}}
+        </div>
+    </section>
+    <section class="tab flexcol {{tabs.macro.cssClass}}" data-group="{{tabs.macro.group}}" data-tab="{{tabs.macro.id}}">
+        <div class="actions-bar" data-tooltip-direction="UP">
+            {{#each slots as |slot|}}
+            <div class="slot {{slot.cssClass}}" role="button" data-action="execute" data-slot="{{slot.slot}}"
+                style="{{slot.style}}" aria-label="{{slot.ariaLabel}}"
+                {{#if slot.tooltip}}data-tooltip-text="{{slot.tooltip}}"{{/if}}>
+                {{#if slot.img}}<img src="{{slot.img}}" alt="{{slot.ariaLabel}}">{{/if}}
+                <span class="key">{{slot.key}}</span>
+            </div>
+            {{/each}}
+        </div>
+    </section>
+
+</div>
