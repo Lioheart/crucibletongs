@@ -1,4 +1,9 @@
 export class HotActions extends foundry.applications.api.HandlebarsApplicationMixin(foundry.applications.api.ApplicationV2) {
+    static maxActionsPerCircle = {
+        action: [10, 14, 18, 22, 26],
+        skill: [0, 12, 16, 20, 24],
+    };
+
     static bindToHud(app, jhtml, data) {
         jhtml.querySelector('.col.left').insertAdjacentHTML('beforeend', this.actionsHud());
         const btn = jhtml.querySelector('.control-icon[data-action="actionHUD"]');
@@ -10,7 +15,8 @@ export class HotActions extends foundry.applications.api.HandlebarsApplicationMi
     }
 
     static actionsHud() {
-        return `<button type="button" class="control-icon" data-action="actionHUD" data-tooltip="crucibletongs.selectAction"><i class="fas fa-hand-fist" width="36" height="36"></button>`;
+        const icon = game.combat ? "fa-hand-fist" : "fa-hand-paper";
+        return `<button type="button" class="control-icon" data-action="actionHUD" data-tooltip="crucibletongs.selectAction"><i class="fas ${icon}" width="36" height="36"></button>`;
     }
 
     constructor(app, target, options = {}) {
@@ -45,9 +51,27 @@ export class HotActions extends foundry.applications.api.HandlebarsApplicationMi
         return this.document?.actor;
     }
 
+    _onPosition(position) {
+        this.element.classList.toggle("large", this.document.height >= 2);
+    }
+
+    static closeAll() {
+        const instance = foundry.applications.instances.get(HotActions.DEFAULT_OPTIONS.id);
+        if (instance) {
+            instance.close({ animate: false });
+        }
+    }
+
     static _onAction(event, target) {
-        const action = target.dataset.actionId;
-        game.system.api.documents.CrucibleActor.macroAction(this.actor, action);
+        const { type, actionId } = target.dataset;
+        switch (type) {
+            case 'action':
+                game.system.api.documents.CrucibleActor.macroAction(this.actor, actionId);
+                break;
+            case 'skill':
+                this.actor.rollSkill(actionId, {dialog: true});
+                break;
+        }
         this.close({ animate: false });
     }
 
@@ -57,51 +81,85 @@ export class HotActions extends foundry.applications.api.HandlebarsApplicationMi
 
     static RADIUS = 100;
 
-    async _prepareContext(options) {
-        const context = await super._prepareContext(options);
-        context.actions = Object.values(this.actor.actions || {});
-        context.radius = this.constructor.RADIUS;
-        
-        const maxActionsPerCircle = [10, 14, 18, 22, 26];
-        
-        context.actions = context.actions.map((action, index) => {
-            // Find which circle this action belongs to
-            let circleIndex = 0;
-            let totalActionsInPreviousCircles = 0;
-            
-            while (circleIndex < maxActionsPerCircle.length) {
-                const actionsInCurrentCircle = Math.min(
-                    maxActionsPerCircle[circleIndex], 
-                    context.actions.length - totalActionsInPreviousCircles
-                );
-                
-                if (index < totalActionsInPreviousCircles + actionsInCurrentCircle) {
-                    break;
-                }
-                
-                totalActionsInPreviousCircles += actionsInCurrentCircle;
-                circleIndex++;
-            }
-            
-            const actionInCircle = index - totalActionsInPreviousCircles;
-            const actionsInThisCircle = Math.min(
-                maxActionsPerCircle[circleIndex], 
-                context.actions.length - totalActionsInPreviousCircles
+    calculateXY(index, totalActions, context, maxActionsPerCircle) {
+        let circleIndex = 0;
+        let totalActionsInPreviousCircles = 0;
+
+        while (circleIndex < maxActionsPerCircle.length) {
+            const actionsInCurrentCircle = Math.min(
+                maxActionsPerCircle[circleIndex],
+                totalActions - totalActionsInPreviousCircles
             );
-            const currentRadius = context.radius * (1 + circleIndex * 0.6);
-            
-            const angle = (actionInCircle / actionsInThisCircle) * 2 * Math.PI - Math.PI / 2;
-            const x = Math.cos(angle) * currentRadius + context.radius;
-            const y = Math.sin(angle) * currentRadius + context.radius;
-            
-            return {
+
+            if (index < totalActionsInPreviousCircles + actionsInCurrentCircle) {
+                break;
+            }
+
+            totalActionsInPreviousCircles += actionsInCurrentCircle;
+            circleIndex++;
+        }
+
+        const actionInCircle = index - totalActionsInPreviousCircles;
+        const actionsInThisCircle = Math.min(
+            maxActionsPerCircle[circleIndex],
+            totalActions - totalActionsInPreviousCircles
+        );
+        const currentRadius = context.radius * (1 + circleIndex * 0.6);
+
+        const angle = (actionInCircle / actionsInThisCircle) * 2 * Math.PI - Math.PI / 2;
+        const x = Math.cos(angle) * currentRadius + context.radius;
+        const y = Math.sin(angle) * currentRadius + context.radius;
+        return { x, y };
+    }
+
+    prepareActions(context) {
+        const actions = Object.values(this.actor.actions || {});
+        const skipActions = new Set(['move', 'recover'])
+        const totalActions = actions.length - skipActions.size;
+        let realindex = 0;
+        return actions.reduce((acc, action) => {
+            if (skipActions.has(action.id)) {
+                return acc;
+            }
+            const { x, y } = this.calculateXY(realindex, totalActions, context, HotActions.maxActionsPerCircle.action);
+            acc.push({
                 img: action.img,
                 id: action.id,
                 name: action.name,
+                type: 'action',
+                style: `left: ${x - 25}px; top: ${y - 25}px;`
+            });
+            realindex += 1;
+            return acc;
+        }, []);
+    }
+
+    prepareSkills(context) {
+        const skills = Object.entries(this.actor.skills || {});
+
+        return skills.map(([id, skill], index) => {
+            const { x, y } = this.calculateXY(index, skills.length, context, HotActions.maxActionsPerCircle.skill);
+            const baseSkill = SYSTEM.SKILL.SKILLS[id];
+            return {
+                img: baseSkill.icon,
+                id,
+                name: baseSkill.label,
+                type: 'skill',
                 style: `left: ${x - 25}px; top: ${y - 25}px;`
             };
         });
-        
+    }
+
+    async _prepareContext(options) {
+        const context = await super._prepareContext(options);
+        context.radius = this.constructor.RADIUS;
+
+        if (game.combat) {
+            context.actions = this.prepareActions(context);
+        } else {
+            context.actions = this.prepareSkills(context);
+        }
+
         context.actorUuid = this.actor?.uuid || '';
         context.scale = canvas.dimensions.uiScale;
         return context;

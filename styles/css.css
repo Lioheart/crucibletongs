@@ -43,3 +43,144 @@
         color: wheat;
     }
 }
+
+.crucibletongs-actor-hud {
+    position: absolute;
+    transform: translateX(-100%);
+    --color-frame: #3f3128;
+    --ressource-color: #FF9900;
+    --text-color: #cfbea2;
+
+    .crucibletongs-hotbar-inner {
+        position: relative;
+    }
+
+    .pips {
+        flex: 0 0 100px;
+        justify-content: center;
+        gap: 4px 0;
+
+        &.focus {
+            --ressource-color: #0066FF;
+        }
+
+        &.heroism {
+            --ressource-color: #ff0059;
+        }
+    }
+
+    .pips .pip {
+        flex: 0 0 10px;
+        height: 10px;
+        border: 1px solid var(--color-frame);
+        background: black;
+        border-radius: 7px;
+
+        &.double {
+            border-color: var(--resource-color);
+        }
+
+        &.full:before {
+            display: block;
+            content: "";
+            width: 6px;
+            height: 6px;
+            margin: 1px;
+            background: var(--ressource-color);
+            border-radius: 50%;
+        }
+    }
+
+    .avatar-container {
+        position: relative;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .avatar {
+        position: relative;
+        z-index: 1;
+        width: 100px;
+        flex: 0 0 100px;
+        min-width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        border: 2px solid var(--color-frame);
+        object-fit: contain;
+        background: rgba(28, 26, 26, 0.5);
+        pointer-events: none;
+    }
+
+    button {
+        border-color: var(--color-frame);
+        background: rgba(28, 26, 26, 0.5);
+        color: var(--text-color);
+
+        &:hover {
+            border-color: darkred;
+            box-shadow: 0 0 10px darkred;
+        }
+    }
+
+
+    .resources {
+        position: relative;
+        align-items: center;
+        justify-content: center;
+        top: 10px;
+        gap: 40px;
+        
+        z-index: -1;
+
+        div {
+            border: 2px solid var(--color-frame);
+            background: rgba(28, 26, 26, 0.8);
+            border-radius: 7px;
+            padding: 2px;
+            color: white;
+        }
+    }
+
+    .tongs-indicator,
+    .tongs-indicator i:before {
+        text-align: center;
+        text-shadow:
+            -1px -1px 0 var(--color-frame),
+            1px -1px 0 var(--color-frame),
+            -1px 1px 0 var(--color-frame),
+            1px 1px 0 var(--color-frame);
+    }
+
+    .quickbuttons {
+        align-items: center;
+        justify-content: center;
+        margin-top: -10px;
+        position: relative;
+        z-index: 1;
+    }
+
+
+    .weapon {
+        width: 40px;
+        height: 40px;
+        line-height: 40px;
+        text-align: center;
+        border-radius: 50%;
+        border: 2px solid var(--color-frame);
+        background: rgba(28, 26, 26, 0.8);
+        cursor: var(--cursor-pointer);
+        color: var(--text-color);
+        position: absolute;
+        z-index: 2;
+
+        &:hover {
+            border-color: darkred;
+            box-shadow: 0 0 10px darkred;
+        }
+
+        img {
+            border-radius: 50%;
+            object-fit: contain;
+        }
+    }
+}

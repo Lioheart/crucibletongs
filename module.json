@@ -31,13 +31,6 @@
     "verified": "13",
     "maximum": "13"
   },
-  "media": [
-    {
-      "type": "setup",
-      "url": "modules/crucibletongs/templates/assets/setup.webp",
-      "thumbnail": "modules/crucibletongs/templates/assets/setup-thumb.webp"
-    }
-  ],
   "relationships": {
     "systems": [
       {

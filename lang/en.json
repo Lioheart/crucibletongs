@@ -1,5 +1,9 @@
 {
     "crucibletongs": {
-        "selectAction": "Select an action"
+        "selectAction": "Select an action",
+        "SETTINGS": {
+            "enableHotBarActor": "Enable Actor on Hotbar",
+            "enableHotBarActorHint": "The current selected actor or character will be shown on the hotbar."
+        }
     }
 }
