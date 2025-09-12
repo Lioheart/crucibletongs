@@ -8,7 +8,7 @@ Be aware as Crucible is still under heavy development the functions might get ou
 
 # Features
 
-* Action HUD on the Token HUD to speed up combat with quick select buttons for attacks. Will show talents instead outside of combat
+* Action HUD on the Token HUD to speed up combat with quick select buttons for attacks. Will show talents instead outside of combat.
 
 <img width="477" height="523" alt="grafik" src="https://github.com/Plushtoast/crucibletongs/blob/foundry13/demo/hud.png?raw=true" />
 

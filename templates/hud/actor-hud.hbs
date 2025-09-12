@@ -10,7 +10,7 @@
         </div>
     </div>
     <div class="avatar-container flexrow">
-        <img class="avatar flex0" src="{{actor.img}}" />
+        <img class="avatar flex0 {{ifThen myTurn 'myRound' ''}}" src="{{actor.img}}" />
         {{#each weapons}}
         <div data-action="weapon" data-id="{{weapon.id}}" class="weapon" style="{{{style}}}">
             {{#if weapon.img}}

@@ -182,6 +182,10 @@
         object-fit: contain;
         background: rgba(28, 26, 26, 0.5);
         pointer-events: none;
+
+        &.myRound {
+            border-color: darkred;
+        }
     }
 
     button {

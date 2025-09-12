@@ -56,6 +56,7 @@ export class HotBarActor extends foundry.applications.api.HandlebarsApplicationM
 
         this.prepareActorContext(context);
         context.inCombat = game.combat;
+        context.myTurn = context.inCombat && game.combat?.current?.combatantId === this.actor?.combatant?.id;
         return context;
     }
 

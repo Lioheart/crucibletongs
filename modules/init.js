@@ -22,7 +22,7 @@ Hooks.on('controlToken', (elem, controlTaken) => {
 });
 
 Hooks.on('updateToken', (scene, token, updates) => {
-    HotBarActor.updateHotbar(token.actor.id);
+    HotBarActor.updateHotbar(token.actor?.id);
 });
 
 Hooks.on('updateActor', (actor, updates) => {
