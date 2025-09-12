@@ -187,6 +187,15 @@
             border-color: darkred;
         }
     }
+    
+    .temporaryEffects {
+        gap: 2px;
+        margin-bottom: 8px;
+    }
+
+    .actor-actions-hud {
+        align-self: end;
+    }
 
     button {
         border-color: var(--color-frame);

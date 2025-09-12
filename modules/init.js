@@ -6,6 +6,7 @@ import { HotBarActor } from "./hotbaractor.js";
 Hooks.on("renderHotbar", (bar, html) => {
     HotBarHover.bindEvents(bar, html);
 });
+;
 
 Hooks.on('renderTokenHUD', (app, jhtml, data) => {
     HotActions.bindToHud(app, jhtml, data);
@@ -14,6 +15,12 @@ Hooks.on('renderTokenHUD', (app, jhtml, data) => {
 Hooks.on("canvasPan", () => {
     HotActions.closeAll();
 });
+
+Hooks.once("ready", () => {
+    foundry.applications.handlebars.loadTemplates([
+        "modules/crucibletongs/templates/tooltip/activeeffect.hbs"
+    ]);
+})
 
 
 /* hotbar hooks */

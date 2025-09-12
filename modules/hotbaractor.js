@@ -68,7 +68,15 @@ export class HotBarActor extends foundry.applications.api.HandlebarsApplicationM
         context.defenseTooltip = this.#prepareDefenseTooltip();
         context.weapons = this.#weaponPositions();
         context.talents = this.#prepareSkills();
+        context.effects = this.#prepareEffects();
         context.slots = ui.hotbar.slots;
+    }
+
+    #prepareEffects() {
+        const effects = this.actor.temporaryEffects.map(eff => {
+            return `<img class="flex0" src="${eff.img}" data-crucible-tooltip="activeeffect" data-uuid="${eff.uuid}" width=20 height=20/>`
+        });
+        return effects.join("");
     }
 
     #prepareDefenseTooltip() {
@@ -203,8 +211,39 @@ export class HotBarActor extends foundry.applications.api.HandlebarsApplicationM
         return resources;
     }
 
+    async #showActiveEffectTooltip(event) {
+        if (!("crucibleTooltip" in event.target.dataset)) return;
+        if ("tooltipHtml" in event.target.dataset) return;
+        const element = event.target;
+        event.stopImmediatePropagation();
+        event.stopPropagation();
+        event.preventDefault();
+        element.dataset.tooltipHtml = ""; // Placeholder to prevent double-activation
+
+        const effect = await fromUuid(element.dataset.uuid);
+        if (!effect) return;
+
+        const tags = effect.statuses.reduce((acc, conditionId) => {
+            const cfg = CONFIG.statusEffects.find(c => c.id === conditionId);
+            if (cfg) acc[conditionId] = game.i18n.localize(cfg.name);
+            return acc;
+        }, {});
+        const html = await foundry.applications.handlebars.renderTemplate("modules/crucibletongs/templates/tooltip/activeeffect.hbs", {
+            tags,
+            effect
+        });
+        element.dataset.tooltipHtml = await CONFIG.ux.TextEditor.enrichHTML(html);
+        element.dataset.tooltipClass = "crucible crucible-tooltip";
+        const pointerover = new event.constructor(event.type, event);
+        element.dispatchEvent(pointerover);
+    }
+
     async _onRender(context, options) {
         await super._onRender(context, options);
+
+        this.element.querySelectorAll('[data-crucible-tooltip="activeeffect"]').forEach(el => {
+            el.addEventListener('pointerover', this.#showActiveEffectTooltip.bind(this));
+        });
 
         ui.hotbar.element.hidden = !!this.actor;
     }
@@ -253,9 +292,9 @@ export class HotBarActor extends foundry.applications.api.HandlebarsApplicationM
                 if (item.system.properties.has("natural")) continue;
 
                 options.push({
-                    name:  `${item.system.dropped ? 'Recover' : 'Equip'} ${item.name}`,
+                    name: `${item.system.dropped ? 'Recover' : 'Equip'} ${item.name}`,
                     icon: `<i class='fa-solid ${item.system.dropped ? 'fa-hand-back-fist' : 'fa-shield-plus'}'></i>`,
-                    callback: () => this.actor.equipItem(item.id, {equipped: true}),
+                    callback: () => this.actor.equipItem(item.id, { equipped: true }),
                 });
             }
             return options;
@@ -266,13 +305,13 @@ export class HotBarActor extends foundry.applications.api.HandlebarsApplicationM
                 name: `Drop ${weapon.name}`,
                 icon: "<i class='fa-solid fa-hand-point-down'></i>",
                 condition: !weapon.system.dropped,
-                callback: () => this.actor.equipItem(weapon.id, {equipped: false, dropped: true}),
+                callback: () => this.actor.equipItem(weapon.id, { equipped: false, dropped: true }),
             },
             {
                 name: `Un-equip ${weapon.name}`,
                 icon: "<i class='fa-solid fa-shield-minus'></i>",
                 condition: !weapon.system.dropped,
-                callback: () => this.actor.equipItem(weapon.id, {equipped: false, dropped: false}),
+                callback: () => this.actor.equipItem(weapon.id, { equipped: false, dropped: false }),
             },
         ];
     }
