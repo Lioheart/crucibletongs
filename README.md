@@ -17,6 +17,10 @@ Be aware as Crucible is still under heavy development the functions might get ou
 <img width="537" height="419" alt="grafik" src="https://github.com/Plushtoast/crucibletongs/blob/foundry13/demo/tooltip.png?raw=true" />
 
 
-* Hotbar replacement which shows actor details and provides quick access to actions and talents.
+* Hotbar replacement which shows actor details and provides quick access to actions and talents. Actions can be sorted with drag and drop.
 
 <img width="537" height="419" alt="grafik" src="https://github.com/Plushtoast/crucibletongs/blob/foundry13/demo/hotbar.png?raw=true" />
+
+* Light-weight combat tracker popout adopted to crucible
+
+<img width="537" height="419" alt="grafik" src="https://github.com/Plushtoast/crucibletongs/blob/foundry13/demo/combattracker.png?raw=true" />
