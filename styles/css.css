@@ -101,6 +101,11 @@
         cursor: var(--cursor-pointer);
         position: relative;
 
+        &.drop-target {
+            background: var(--color-cool-4);
+            border-color: var(--color-warm-2);
+        }
+
         .key {
             position: absolute;
             top: 0;

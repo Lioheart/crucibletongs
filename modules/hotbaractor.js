@@ -2,6 +2,8 @@ export class HotBarActor extends foundry.applications.api.HandlebarsApplicationM
     static AVATAR_RADIUS = 100;
     static WEAPON_RADIUS = 40;
 
+    #dropTarget;
+
     static DEFAULT_OPTIONS = {
         id: "actor-hud",
         actions: {
@@ -64,12 +66,36 @@ export class HotBarActor extends foundry.applications.api.HandlebarsApplicationM
         if (!this.actor) return context;
 
         context.actor = this.actor;
+        context.actions = this.#prepareActions();
         context.resources = this.#prepareResources();
         context.defenseTooltip = this.#prepareDefenseTooltip();
         context.weapons = this.#weaponPositions();
         context.talents = this.#prepareSkills();
         context.effects = this.#prepareEffects();
         context.slots = ui.hotbar.slots;
+    }
+
+    #prepareActions() {
+        const actions = this.actor.actions || {};
+        const sortBy = this.actor.getFlag("crucibletongs", "hotbarSlots") || [];
+
+        if( sortBy.length === 0 ) return actions;
+
+        const seen = new Set();
+        const sorted = {};
+        for (const id of sortBy) {
+            if (id in actions) {
+                sorted[id] = actions[id];
+                seen.add(id);
+            }
+        }
+        for (const [id, action] of Object.entries(actions)) {
+            if (seen.has(id)) continue;
+            if (!(id in sorted)) {
+                sorted[id] = action;
+            }
+        }
+        return sorted;
     }
 
     #prepareEffects() {
@@ -245,7 +271,61 @@ export class HotBarActor extends foundry.applications.api.HandlebarsApplicationM
             el.addEventListener('pointerover', this.#showActiveEffectTooltip.bind(this));
         });
 
+        new foundry.applications.ux.DragDrop.implementation({
+            dragSelector: "[data-type='action']",
+            dropSelector: '.slot',
+            callbacks: {
+                dragstart: this.#onDragStart.bind(this),
+                dragover: this.#onDragOver.bind(this),
+                drop: this.#onDrop.bind(this)
+            }
+        }).bind(this.element);
+
         ui.hotbar.element.hidden = !!this.actor;
+    }
+
+    #onDragStart(event) {
+        game.tooltip.deactivate();
+        const target = event.currentTarget;
+        const dragData = {
+            id: target.dataset.actionId,
+            type: target.dataset.type,
+        };
+        event.dataTransfer.setData("text/plain", JSON.stringify(dragData));
+    }
+
+    #onDragOver(event) {
+        const target = event.target.closest(".slot");
+        if (target === this.#dropTarget) return;
+        if (this.#dropTarget) this.#dropTarget.classList.remove("drop-target");
+        this.#dropTarget = target;
+        target.classList.add("drop-target");
+    }
+
+    #onDrop(event) {
+        if ( this.#dropTarget ) {
+            this.#dropTarget.classList.remove("drop-target");
+            this.#dropTarget = undefined;
+        }
+
+        const dragData = JSON.parse(event.dataTransfer.getData("text/plain"));
+        if (!dragData || !("id" in dragData) || !("type" in dragData)) return;
+
+        const target = event.target.closest(".slot")?.dataset.actionId;
+        if (!target) return;
+
+        const slots = this.element.querySelectorAll(".action-items .slot");
+
+        const slotArray = Array.from(slots).map(s => s.dataset.actionId);
+        const fromIndex = slotArray.indexOf(dragData.id);
+        const toIndex = slotArray.indexOf(target);
+
+        if (fromIndex === -1 || toIndex === -1 || fromIndex === toIndex) return;
+
+        slotArray[fromIndex] = target;
+        slotArray[toIndex] = dragData.id;
+
+        this.actor.setFlag("crucibletongs", "hotbarSlots", slotArray);
     }
 
     static updateHotbar(actorId, force = false) {

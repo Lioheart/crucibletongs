@@ -17,8 +17,8 @@
     </nav>
 
     <section class="tab flexcol {{tabs.actions.cssClass}}" data-group="{{tabs.actions.group}}" data-tab="{{tabs.actions.id}}">
-        <div class="actions-bar" data-tooltip-direction="UP">
-            {{#each actor.actions as |action key|}}
+        <div class="actions-bar action-items" data-tooltip-direction="UP">
+            {{#each actions as |action key|}}
             <div class="slot" type="button" data-type="action" data-action="action" data-key="{{key}}" data-uuid="{{../actor.uuid}}" data-crucible-tooltip="action" data-tooltip-class="crucible crucible-tooltip" data-tooltip="{{action.name}}" data-action-id="{{key}}">
                 <img src="{{action.img}}" />
             </div>
