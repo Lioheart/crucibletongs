@@ -3,12 +3,22 @@
         "selectAction": "Select an action",
         "SETTINGS": {
             "enableHotBarActor": "Enable Actor on Hotbar",
-            "enableHotBarActorHint": "The current selected actor or character will be shown on the hotbar."
+            "enableHotBarActorHint": "The current selected actor or character will be shown on the hotbar.",
+            "enableCombatFlow": "Enable Combat Tracker",
+            "enableCombatFlowHint": "Enables the additional Crucible Combat Tracker.",
+            "iniTrackerCount": "Combat Tracker Count",
+            "iniTrackerCountHint": "Number of actors displayed in the Combat Tracker",
+            "iniTrackerSize": "Combat Tracker Size",
+            "iniTrackerSizeHint": "Size of the buttons in the Combat Tracker",
+            "enableCombatPan": "Pan to Current Turn",
+            "enableCombatPanHint": "Pan the view to the current turn and select the token if ownership rights are available."
         },
         "TABS": {
             "MACRO": "Macros",
             "ACTIONS": "Actions",
             "TALENTS": "Talents"
-        }
+        },
+        "combatTracker": "Combat Tracker",
+        "waitInit": "Delay"
     }
 }

@@ -2,6 +2,7 @@ import { HotBarHover } from "./hotbar.js";
 import { HotActions } from "./hotactions.js";
 import "./settings.js";
 import { HotBarActor } from "./hotbaractor.js";
+import { CrucibleCombatTracker } from "./initiativetracker.js";
 
 Hooks.on("renderHotbar", (bar, html) => {
     HotBarHover.bindEvents(bar, html);
@@ -95,3 +96,21 @@ Hooks.on('canvasInit', () => {
 });
 
 /* ################# */
+
+
+Hooks.on('renderCombatTracker', (app, html, data, what) => {
+    if (!game.settings.get('crucibletongs', 'enableCombatFlow')) return;
+
+    const combatTracker = game.modules.get("crucibletongs").api.combatTracker;
+    if (game.combat) {
+        combatTracker.updateTracker(data);
+    } else {
+        combatTracker.close();
+    }
+});
+
+Hooks.once('init', () => {
+    game.modules.get("crucibletongs").api = {
+        combatTracker: new CrucibleCombatTracker()
+    }
+});
