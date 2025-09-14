@@ -3,8 +3,8 @@
 # Crucible Tongs
 
 Crucible Tongs adds some minor functionality to the crucible system to enhance the experience for the current Ember Playtest.
-Among these is a Action HUD on the Token to quickly select combat actions as well as some additional tooltips for the Macro bar.
-Be aware as Crucible is still under heavy development the functions might get oudated or replace quickly.
+Among these is a Action HUD on the Token to quickly select combat actions as well as some additional tooltips for the Macro bar, a macro bar replacement and a initiative tracker.
+Be aware as Crucible is still under heavy development the functions might get oudated or replaced quickly.
 
 # Features
 
@@ -23,4 +23,4 @@ Be aware as Crucible is still under heavy development the functions might get ou
 
 * Light-weight combat tracker popout adopted to crucible
 
-<img width="537" height="419" alt="grafik" src="https://github.com/Plushtoast/crucibletongs/blob/foundry13/demo/combattracker.png?raw=true" />
+<img alt="grafik" src="https://github.com/Plushtoast/crucibletongs/blob/foundry13/demo/combattracker.png?raw=true" />

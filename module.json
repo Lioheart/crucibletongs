@@ -37,7 +37,7 @@
         "id": "crucible",
         "type": "system",
         "compatibility": {
-          "minimum": "0.7.0"
+          "minimum": "0.7.8"
         }
       }
     ]

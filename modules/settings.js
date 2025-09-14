@@ -57,7 +57,7 @@ Hooks.once('init', () => {
                 step: 1,
             },
             onChange: async (val) => {
-                game.modules.get("crucibletongs").api.combatTracker.constructor.defaultOptions.actorCount = val;
+                if(game.combat) game.modules.get("crucibletongs").api.combatTracker.render({ force: true });
             },
         },
     };
