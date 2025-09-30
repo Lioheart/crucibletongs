@@ -46,8 +46,12 @@ export class HotBarActor extends foundry.applications.api.HandlebarsApplicationM
     }
 
     #setActor() {
-        const controlled = canvas.tokens.controlled;
+        const controlled = canvas?.tokens?.controlled | [];
         this.actor = controlled.length < 2 ? (controlled[0]?.actor ?? game.user.character) : null;
+
+        if (this.actor?.type === 'group') {
+            this.actor = game.user.character;
+        }
 
         if (this.actor && !this.actor?.isOwner) this.actor = null;
     }
@@ -58,7 +62,8 @@ export class HotBarActor extends foundry.applications.api.HandlebarsApplicationM
 
         this.prepareActorContext(context);
         context.inCombat = game.combat;
-        context.myTurn = context.inCombat && game.combat?.current?.combatantId === this.actor?.combatant?.id;
+        const token = this.actor?.isToken ? this.actor.token : this.actor?.getActiveTokens()[0];
+        context.myTurn = context.inCombat && game.combat?.current?.combatantId === token?.combatant?.id;
         return context;
     }
 
@@ -79,7 +84,7 @@ export class HotBarActor extends foundry.applications.api.HandlebarsApplicationM
         const actions = this.actor.actions || {};
         const sortBy = this.actor.getFlag("crucibletongs", "hotbarSlots") || [];
 
-        if( sortBy.length === 0 ) return actions;
+        if (sortBy.length === 0) return actions;
 
         const seen = new Set();
         const sorted = {};
@@ -303,7 +308,7 @@ export class HotBarActor extends foundry.applications.api.HandlebarsApplicationM
     }
 
     #onDrop(event) {
-        if ( this.#dropTarget ) {
+        if (this.#dropTarget) {
             this.#dropTarget.classList.remove("drop-target");
             this.#dropTarget = undefined;
         }
