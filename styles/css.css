@@ -283,7 +283,7 @@
         height: var(--tokenQuickhotsize);
         text-align: center;
         float: right;
-        width: 15px;
+        min-width: 15px;
         background: none;
         border: none;
         line-height: var(--iniTrackerSize);
@@ -293,29 +293,29 @@
         }
     }
 
-    .iniItem.newRound,
-    .newRound {
-        border-color: #496fd7;
-        background-color: #496fd72d;
-        box-shadow: inset 0px 0px 10px #496fd7;
-        border-top-left-radius: 0px;
-        border-bottom-left-radius: 0px;
+    .next-round-box {
+        background: linear-gradient(135deg, #496fd7 0%, #2d4a9e 100%) !important;
+        border: 2px solid #6b8cde !important;
+        box-shadow: 0 0 10px rgba(73, 111, 215, 0.5) !important;
 
-        .iniNumber {
-            border-top-left-radius: 0px;
-            border-bottom-left-radius: 0px;
+        .next-round-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: white;
+            gap: 4px;
+
+            i {
+                font-size: calc(var(--iniTrackerSize) * 0.35);
+            }
+
+            .next-round-number {
+                font-size: calc(var(--iniTrackerSize) * 0.3);
+                font-weight: bold;
+            }
         }
-    }
-
-    .turnRound {
-        padding: 2px;
-        border-radius: 100%;
-        width: 21px;
-        display: inline-block;
-    }
-
-    .newRound .turnRound {
-        background-color: #496fd7;
     }
 
     .waitTitle {
@@ -350,6 +350,7 @@
         display: flex;
         flex-direction: column;
         align-items: end;
+
         i {
             color: white;
             background: rgba(0, 0, 0, 0.7);

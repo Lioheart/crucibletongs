@@ -83,30 +83,36 @@ export class CrucibleCombatTracker extends foundry.applications.api.HandlebarsAp
 
         const skipDefeated = game.settings.get('core', Combat.CONFIG_SETTING).skipDefeated;
 
-        // TODO: Refactor the following logic to use a single loop for filtering and processing turns.
         const anyActive = turnsToUse.some((x) => x.active);
         let unRolled = data.turns.some((x) => x.isOwner && !x.initiative && (!game.user.isGM || data.combat.combatants.get(x.id).isNPC));
+        
+        const activeIndex = turnsToUse.findIndex((x) => x.active);
+        const startIndex = activeIndex === -1 ? 0 : activeIndex;
+        
+        let remainingValidTurns = 0;
+        for (let i = startIndex; i < turnsToUse.length; i++) {
+            const combatant = data.combat.combatants.get(turnsToUse[i].id);
+            if (!(skipDefeated && combatant.defeated) && (game.user.isGM || !combatant.hidden)) {
+                remainingValidTurns++;
+            }
+        }
+        
+        const showEndOfRoundBox = combatStarted && remainingValidTurns < actorCount;
+        const turnLimit = showEndOfRoundBox ? actorCount - 1 : actorCount;
+
         if (turnsToUse.length) {
             const filteredTurns = [];
-
-            let toAdd = actorCount;
             let started = false;
-            let startIndex = -1;
-            let index = 0;
-            let loops = 0;
-            let currentRound;
-            while (!(toAdd === 0 || loops === actorCount)) {
-                const turn = duplicate(turnsToUse[index]);
-                const combatant = data.combat.combatants.get(turn.id);
-                if (started && index === startIndex) turn.css = turn.css.replace('active', '');
 
-                if (!combatStarted || (turn.active && !started) || (!anyActive && !started)) {
+            for (let i = startIndex; i < turnsToUse.length && filteredTurns.length < turnLimit; i++) {
+                const turn = duplicate(turnsToUse[i]);
+                const combatant = data.combat.combatants.get(turn.id);
+
+                if (!combatStarted || turn.active || !anyActive) {
                     started = true;
-                    startIndex = index;
                 }
 
                 if (started && !(skipDefeated && combatant.defeated) && (game.user.isGM || !combatant.hidden)) {
-                    turn.round = data.combat.round + loops;
                     if (turn.isOwner && combatant.actor) {
                         turn.maxLP = combatant.actor.resources.health.max;
                         turn.currentLP = combatant.actor.resources.health.value;
@@ -114,24 +120,24 @@ export class CrucibleCombatTracker extends foundry.applications.api.HandlebarsAp
                         turn.currentM = combatant.actor.resources.morale.value;
                         turn.defenseTooltip = this.#prepareDefenseTooltip(combatant);
                     }
-                    if (currentRound && currentRound !== turn.round) turn.newRound = 'newRound';
-
-                    currentRound = turn.round;
                     filteredTurns.push(turn);
-                    toAdd--;
-                }
-                index++;
-                if (index >= turnsToUse.length) {
-                    index = 0;
-                    loops++;
                 }
             }
             data.turns = filteredTurns;
         }
 
-        data.isLastRound = data.turns[1]?.newRound;
+        const remainingTurns = turnsToUse.slice(startIndex + 1).filter(t => {
+            const combatant = data.combat.combatants.get(t.id);
+            return !(skipDefeated && combatant.defeated) && (game.user.isGM || !combatant.hidden);
+        });
+        data.isLastTurn = combatStarted && remainingTurns.length === 0;
+        data.showEndOfRoundBox = showEndOfRoundBox;
+        data.currentRound = data.combat.round;
+        data.nextRound = data.combat.round + 1;
 
-        options.position.width = itemWidth * actorCount + actorCount * 3 + 70;
+        const calculatedWidth = itemWidth * actorCount + actorCount * 3 + 70;
+        const minWidth = 250;
+        options.position.width = Math.max(calculatedWidth, minWidth);
         options.position.height = itemWidth + 10;
 
         Object.assign(data, {

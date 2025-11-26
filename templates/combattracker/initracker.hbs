@@ -1,6 +1,6 @@
 <div style="--iniTrackerSize:{{itemWidth}}px">
     <div class="flexrow">
-        <div class="controls right">
+        <div class="controls right flex0">
             {{#if (and user.isGM combat.round)}}
             <button type="button" class="frame-brown inline-control combat-control icon fa-solid encounter-context-menu fa-ellipsis-vertical"></button>
             <button type="button" class="frame-brown inline-control combat-control icon fa-solid fa-step-backward"
@@ -13,9 +13,9 @@
             data-tooltip="COMBAT.TurnPrev" aria-label="{{ localize "COMBAT.TurnPrev" }}"></button>
             {{/if}}
         </div>
-        <ul class="iniTrackerList">
+        <ul class="iniTrackerList flex1">
             {{#each turns}}
-            <li data-tooltip-html="{{defenseTooltip}}" data-combatant-id="{{id}}" data-action="activateCombatant" data-tooltip-class="crucible crucible-tooltip" class="combatant iniItem {{newRound}} {{css}}" style="background-image:url('{{img}}');">
+            <li data-tooltip-html="{{defenseTooltip}}" data-combatant-id="{{id}}" data-action="activateCombatant" data-tooltip-class="crucible crucible-tooltip" class="combatant iniItem {{css}}" style="background-image:url('{{img}}');">
                 <div class="combatant-advanced">
                     
                 </div>
@@ -43,8 +43,16 @@
                 </div>
             </li>
             {{/each}}
+            {{#if showEndOfRoundBox}}
+            <li class="iniItem next-round-box" data-tooltip="{{localize 'COMBAT.RoundNext'}}">
+                <div class="next-round-content">
+                    <i class="fa-solid fa-dice-d20"></i>
+                    <span class="next-round-number">{{nextRound}}</span>
+                </div>
+            </li>
+            {{/if}}
         </ul>
-        <div class="controls">
+        <div class="controls flex0">
             {{#if user.isGM}}
             <button type="button" class="frame-brown inline-control combat-control icon fa-solid fa-trash" data-action="endCombat"
                 data-tooltip="COMBAT.Delete" aria-label="{{ localize "COMBAT.Delete" }}"></button>
@@ -61,7 +69,7 @@
 
             {{/if}}
         </div>
-        <section class="dragHandler">
+        <section class="dragHandler flex0">
             <i class="fas fa-grip-vertical"></i>
         </section>
     </div>
@@ -75,7 +83,7 @@
     {{else}}
     {{#if (or control user.isGM)}}
     <div class="flexrow">
-        <button type="button" class="combat-control frame-brown {{ifThen isLastRound 'lastRound' ''}}" data-action="nextTurn">{{localize (ifThen isLastRound 'COMBAT.RoundNext' 'COMBAT.TurnEnd')}}</button>
+        <button type="button" class="combat-control frame-brown {{ifThen isLastTurn 'lastRound' ''}}" data-action="nextTurn">{{localize (ifThen isLastTurn 'COMBAT.RoundNext' 'COMBAT.TurnEnd')}}</button>
         <button type="button" class="combat-control frame-brown" data-action="waitInit">{{localize 'crucibletongs.waitInit'}}</button>
     </div>    
     {{/if}}
