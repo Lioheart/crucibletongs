@@ -14,7 +14,7 @@
         {{#each weapons}}
         <div data-action="weapon" data-id="{{weapon.id}}" class="weapon" style="{{{style}}}">
             {{#if weapon.img}}
-            <img data-tooltip="{{weapon.name}}" src="{{weapon.img}}" />
+            <img data-tooltip="{{weapon.name}}" data-crucible-tooltip="weapon" data-item-id="{{weapon.id}}" data-uuid="{{weapon.uuid}}" data-tooltip-class="crucible crucible-tooltip" src="{{weapon.img}}" />
             {{else}}
             <i class="fas fa-hand"></i>
             {{/if}}

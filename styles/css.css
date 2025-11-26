@@ -287,6 +287,9 @@
         background: none;
         border: none;
         line-height: var(--iniTrackerSize);
+        display: flex;
+        align-items: center;
+        justify-content: center;
 
         &:hover {
             color: white;

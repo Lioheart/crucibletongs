@@ -1,3 +1,5 @@
+import { defenseTooltip } from "./utility.js";
+
 export class HotBarActor extends foundry.applications.api.HandlebarsApplicationMixin(foundry.applications.api.ApplicationV2) {
     static AVATAR_RADIUS = 100;
     static WEAPON_RADIUS = 40;
@@ -33,6 +35,11 @@ export class HotBarActor extends foundry.applications.api.HandlebarsApplicationM
         },
     };
 
+    get token() {
+        if (this.actor?.isToken) return this.actor.token;
+        return this.actor?.getActiveTokens()[0];
+    }
+
     static _onAction(event, target) {
         const { type, actionId } = target.dataset;
         switch (type) {
@@ -62,7 +69,7 @@ export class HotBarActor extends foundry.applications.api.HandlebarsApplicationM
 
         this.prepareActorContext(context);
         context.inCombat = game.combat;
-        const token = this.actor?.isToken ? this.actor.token : this.actor?.getActiveTokens()[0];
+        const token = this.token;
         context.myTurn = context.inCombat && game.combat?.current?.combatantId === token?.combatant?.id;
         return context;
     }
@@ -78,6 +85,10 @@ export class HotBarActor extends foundry.applications.api.HandlebarsApplicationM
         context.talents = this.#prepareSkills();
         context.effects = this.#prepareEffects();
         context.slots = ui.hotbar.slots;
+    }
+
+    #prepareDefenseTooltip() {
+        return defenseTooltip({actor: this.actor, token: this.token});
     }
 
     #prepareActions() {
@@ -105,23 +116,9 @@ export class HotBarActor extends foundry.applications.api.HandlebarsApplicationM
 
     #prepareEffects() {
         const effects = this.actor.temporaryEffects.map(eff => {
-            return `<img class="flex0" src="${eff.img}" data-crucible-tooltip="activeeffect" data-uuid="${eff.uuid}" width=20 height=20/>`
+            return `<img class="flex0" src="${eff.img}" data-tooltip-class="crucible crucible-tooltip" data-crucible-tooltip="activeEffect" data-uuid="${eff.uuid}" width=20 height=20/>`
         });
         return effects.join("");
-    }
-
-    #prepareDefenseTooltip() {
-        const lines = ['physical', 'fortitude', 'willpower', 'reflex'].map(type => {
-            const value = this.actor.defenses[type];
-            const name = game.i18n.localize(`DEFENSES.${type.capitalize()}`);
-            return `${name}: ${value.total}`;
-        });
-        const stride = game.i18n.localize('ACTOR.FIELDS.movement.stride.label');
-        const engage = game.i18n.localize('ACTOR.FIELDS.movement.engagement.labelShort');
-        lines.push(`${stride}: ${this.actor.system.movement.stride}`);
-        lines.push(`${engage}: ${this.actor.system.movement.engagement}`);
-
-        return lines.join("<br>");
     }
 
     #weaponPositions() {
@@ -242,39 +239,8 @@ export class HotBarActor extends foundry.applications.api.HandlebarsApplicationM
         return resources;
     }
 
-    async #showActiveEffectTooltip(event) {
-        if (!("crucibleTooltip" in event.target.dataset)) return;
-        if ("tooltipHtml" in event.target.dataset) return;
-        const element = event.target;
-        event.stopImmediatePropagation();
-        event.stopPropagation();
-        event.preventDefault();
-        element.dataset.tooltipHtml = ""; // Placeholder to prevent double-activation
-
-        const effect = await fromUuid(element.dataset.uuid);
-        if (!effect) return;
-
-        const tags = effect.statuses.reduce((acc, conditionId) => {
-            const cfg = CONFIG.statusEffects.find(c => c.id === conditionId);
-            if (cfg) acc[conditionId] = game.i18n.localize(cfg.name);
-            return acc;
-        }, {});
-        const html = await foundry.applications.handlebars.renderTemplate("modules/crucibletongs/templates/tooltip/activeeffect.hbs", {
-            tags,
-            effect
-        });
-        element.dataset.tooltipHtml = await CONFIG.ux.TextEditor.enrichHTML(html);
-        element.dataset.tooltipClass = "crucible crucible-tooltip";
-        const pointerover = new event.constructor(event.type, event);
-        element.dispatchEvent(pointerover);
-    }
-
     async _onRender(context, options) {
         await super._onRender(context, options);
-
-        this.element.querySelectorAll('[data-crucible-tooltip="activeeffect"]').forEach(el => {
-            el.addEventListener('pointerover', this.#showActiveEffectTooltip.bind(this));
-        });
 
         new foundry.applications.ux.DragDrop.implementation({
             dragSelector: "[data-type='action']",
