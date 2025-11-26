@@ -242,6 +242,10 @@ export class HotBarActor extends foundry.applications.api.HandlebarsApplicationM
     async _onRender(context, options) {
         await super._onRender(context, options);
 
+        this.element.querySelector('.avatar')?.addEventListener('dblclick', () => {
+            if (this.actor) this.actor.sheet.render(true);
+        });
+
         new foundry.applications.ux.DragDrop.implementation({
             dragSelector: "[data-type='action']",
             dropSelector: '.slot',
