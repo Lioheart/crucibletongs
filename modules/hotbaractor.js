@@ -242,6 +242,11 @@ export class HotBarActor extends foundry.applications.api.HandlebarsApplicationM
     async _onRender(context, options) {
         await super._onRender(context, options);
 
+        const scale = game.settings.get("crucibletongs", "hotbarActorScale") ?? 1;
+        const maxWidth = game.settings.get("crucibletongs", "hotbarActionBarMaxWidth") ?? 300;
+        this.element.style.setProperty("--hotbarActorScale", scale);
+        this.element.style.setProperty("--hotbarActionBarMaxWidth", `${maxWidth}px`);
+
         this.element.querySelector('.avatar')?.addEventListener('dblclick', () => {
             if (this.actor) this.actor.sheet.render(true);
         });

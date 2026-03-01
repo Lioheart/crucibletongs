@@ -60,6 +60,40 @@ Hooks.once('init', () => {
                 if(game.combat) game.modules.get("crucibletongs").api.combatTracker.render({ force: true });
             },
         },
+        hotbarActorScale: {
+            name: 'crucibletongs.SETTINGS.hotbarActorScale',
+            hint: 'crucibletongs.SETTINGS.hotbarActorScaleHint',
+            scope: 'client',
+            config: true,
+            default: 1,
+            type: Number,
+            range: {
+                min: 0.5,
+                max: 2,
+                step: 0.05,
+            },
+            onChange: async () => {
+                const instance = foundry.applications.instances.get("actor-hud");
+                if (instance) instance.render(true, { focus: false });
+            },
+        },
+        hotbarActionBarMaxWidth: {
+            name: 'crucibletongs.SETTINGS.hotbarActionBarMaxWidth',
+            hint: 'crucibletongs.SETTINGS.hotbarActionBarMaxWidthHint',
+            scope: 'client',
+            config: true,
+            default: 300,
+            type: Number,
+            range: {
+                min: 120,
+                max: 1000,
+                step: 10,
+            },
+            onChange: async () => {
+                const instance = foundry.applications.instances.get("actor-hud");
+                if (instance) instance.render(true, { focus: false });
+            },
+        },
     };
     for (const [key, value] of Object.entries(settings)) {
         game.settings.register('crucibletongs', key, value);
