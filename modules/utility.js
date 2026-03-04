@@ -1,6 +1,10 @@
 export function defenseTooltip(combatant) {
-  const { actor, token } = combatant;
-  const lines = [`<h4>${token.name}</h4>`].concat(
+  const actor = combatant?.actor;
+  const token = combatant?.token;
+  if (!actor) return "";
+
+  const title = token?.name ?? actor.name ?? "";
+  const lines = [`<h4>${title}</h4>`].concat(
     ["physical", "fortitude", "willpower", "reflex"].map((type) => {
       const value = actor.defenses[type];
       const name = game.i18n.localize(`DEFENSES.${type.capitalize()}`);

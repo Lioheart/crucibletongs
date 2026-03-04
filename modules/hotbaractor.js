@@ -54,10 +54,11 @@ export class HotBarActor extends foundry.applications.api.HandlebarsApplicationM
 
     #setActor() {
         const controlled = canvas?.tokens?.controlled || [];
-        this.actor = controlled.length < 2 ? (controlled[0]?.actor ?? game.user.character) : null;
+        const fallbackActor = game.user.character ?? game.actors?.find((actor) => actor.isOwner && actor.type !== 'group') ?? null;
+        this.actor = controlled.length < 2 ? (controlled[0]?.actor ?? fallbackActor) : null;
 
         if (this.actor?.type === 'group') {
-            this.actor = game.user.character;
+            this.actor = fallbackActor;
         }
 
         if (this.actor && !this.actor?.isOwner) this.actor = null;
